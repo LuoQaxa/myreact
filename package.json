@@ -1,0 +1,25 @@
+{
+  "name": "myreact",
+  "version": "1.0.0",
+  "description": "实现一个简易版本的react",
+  "main": "index.js",
+  "scripts": {
+    "start": "parcel ./index.html --open -p 1234 --no-cache"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LuoQaxa/myreact.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LuoQaxa/myreact/issues"
+  },
+  "homepage": "https://github.com/LuoQaxa/myreact#readme",
+  "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-react-jsx": "^6.24.1",
+    "babel-preset-env": "^1.7.0"
+  }
+}
