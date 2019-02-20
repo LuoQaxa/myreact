@@ -1,8 +1,9 @@
 
 import { humpToStandard } from './util';
-
+import Component from './Component';
 const React = {
-  createElement
+  createElement,
+  Component
 }
 
 /**
@@ -13,6 +14,7 @@ const React = {
  */
 // TODO: 如果有多个children
 function createElement(tag, attribute, children) {  
+  // tag有可能是一个函数，即组件
   return {
     attribute,
     children,
@@ -47,8 +49,24 @@ const ReactDOM = {
  * 将虚拟dom渲染到页面上
  * @param {*} vdom 虚拟dom
  * @param {*} container 挂载到的html节点
+ * vdom.nodeName 如果是自定义组件则为一个函数: f componentName() {}
  */
 function render(vdom, container) {
+  // 如果是function const A = () => { <div>dsdsds</div> } 或者是class的形式
+  // class A { render() {return ()}} , new A()
+  // 两种的区别在于一个函数是继承了Component所以prototype上有render方法
+  let component, returnVdom;
+  if (typeof(vdom.nodeName) === 'function') {
+    if (vdom.nodeName.prototype.render) {
+      component = new vom.nodeName();
+      returnVdom = component.render()
+    } else {
+      returnVdom = vdom.nodeName();
+    }
+    render(returnVdom, container)
+    return;
+  }
+
   if (typeof(vdom) === 'string') {
     container.innerText = vdom;
     return 
@@ -93,7 +111,12 @@ function setAttribute(dom, attr, value) {
   }
 }
 
+const A = () => <div>I'm componentA</div>
+
 ReactDOM.render(
-  element,
+  // element,
+  <A/>,
   document.getElementById('root')
 )
+
+// <A/> babel编译 -> React.createElement(A, null)
