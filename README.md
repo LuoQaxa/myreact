@@ -51,10 +51,28 @@ ReactDOM.render(
 
 #### 实现
 ```jsx
-const A = (props) => {
-  console.log(props);
-  const { name } = props;
-  return (<div>i am component a with props, my owner name is {props}</div>)
+class A extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      count: 1
+    }
+  }
+
+  click() {
+    this.setState({
+      count: ++this.state.count
+    })
+  }
+
+  render() {
+    return (
+      <div>
+        <button onClick={this.click.bind(this)}>Click Me!</button>
+        <div>{this.props.name}:{this.state.count}</div>
+      </div>
+    )
+  }
 }
 
 ReactDOM.render(
@@ -62,4 +80,20 @@ ReactDOM.render(
   document.getElementById('root')
 )
 ```
+
+#### 难点：
+  1. 所有组件都继承`Component`构造函数，这个函数的原型上添加setState方法，当调用时重新渲染更新后的`vdom`
+  2. 组件的props是如何传入组件的：在`render`的时候将`vdom.attribute`传入`new Vdom.nodeName(vdom.attribute)`，在组件的`constructor`中将`props`传入，调用`super(props)`调用`Component`构造函数，将`props`添加到实例属性上。
+  3. `ReactDOM.render`在每次热更新的时候需要清空当前渲染的dom。
+
+
+## 四 整理项目结构
+
+## 五 生命周期
+
+## 六 diff算法
+
+
+
+
 

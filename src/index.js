@@ -140,9 +140,6 @@ class A extends Component {
     // super的作用是调用父组件的构造函数
     // 将属性挂载到实例上
     super(props)
-    // this.state = {
-    //   count: 1
-    // }
     this.state = {
       count: 1
     }
