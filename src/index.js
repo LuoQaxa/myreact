@@ -13,7 +13,7 @@ const React = {
  * @param {*} children 子节点
  */
 // TODO: 如果有多个children
-function createElement(tag, attribute, children) {  
+function createElement(tag, attribute, ...children) {  
   // tag有可能是一个函数，即组件
   return {
     attribute,
@@ -41,8 +41,12 @@ const element = (
 // 
 console.log('element is', element);
 
-const ReactDOM = {
-  render
+export const ReactDOM = {
+  render(vdom, container) {
+    // 每次热更新都会有去render一下，会将新的dom节点挂载到页面上，所以需要先清空一下
+    container.innerHTML = null;
+    render(vdom, container);
+  }
 }
 
 /**
@@ -58,16 +62,19 @@ function render(vdom, container) {
   let component, returnVdom;
   if (typeof(vdom.nodeName) === 'function') {
     if (vdom.nodeName.prototype.render) {
-      component = new vom.nodeName();
+      // 将属性传入，这里是将所有的属性都传入了类的constructor中
+      // 
+      component = new vdom.nodeName(vdom.attribute);
       returnVdom = component.render()
     } else {
       returnVdom = vdom.nodeName();
     }
+    console.log('returnvdom is', returnVdom);
     render(returnVdom, container)
     return;
   }
 
-  if (typeof(vdom) === 'string') {
+  if (typeof(vdom) === 'string' || typeof(vdom) === 'number') {
     container.innerText = vdom;
     return 
   }
@@ -77,7 +84,7 @@ function render(vdom, container) {
   for (let attr in vdom.attribute) {
     setAttribute(dom, attr, vdom.attribute[attr])
   }
-  render(vdom.children, dom)
+  vdom.children.forEach(vdomChild => render(vdomChild, dom))
   container.appendChild(dom);
   // 将属性设置在这个dom节点上
 
@@ -94,7 +101,7 @@ function setAttribute(dom, attr, value) {
     attr = 'class'
   }
   if (attr.match(/on\w+/)) {      // 处理事件属性
-    const eventName = attr.toLowerCase().splice(1);
+    const eventName = attr.toLowerCase().slice(2);
     dom.addEventListener(eventName, value);
   } else if (attr === 'style') {
     let styleStr = ''
@@ -111,11 +118,55 @@ function setAttribute(dom, attr, value) {
   }
 }
 
-const A = () => <div>I'm componentA</div>
+// const A = () => <div>I'm componentA</div>
+
+// ReactDOM.render(
+//   // element,
+//   <A/>,
+//   document.getElementById('root')
+// )
+
+// const A = (props) => {
+//   console.log(props);
+//   const { name } = props;
+//   return (<div>i am component a with props, my owner name is {name}</div>)
+// }
+class A extends Component {
+  // new A()的时候，会执行constructor，那为什么要传递props到constructor里面呢
+  // super的作用到底是什么呢，props到底是从哪里来的呢
+  constructor(props) {
+    // 将这个A组件的props放到super当中执行
+    // super(props)
+    // super的作用是调用父组件的构造函数
+    // 将属性挂载到实例上
+    super(props)
+    // this.state = {
+    //   count: 1
+    // }
+    this.state = {
+      count: 1
+    }
+  }
+
+  click() {
+    this.setState({
+      count: ++this.state.count
+    })
+  }
+
+  render() {
+    return (
+      <div>
+        {/* {包裹的在babel编译时就会被执行} */}
+        <button onClick={this.click.bind(this)}>Click Me!</button>
+        <div>{this.props.name}:{this.state.count}</div>
+      </div>
+    )
+  }
+}
 
 ReactDOM.render(
-  // element,
-  <A/>,
+  <A name='luoqian' />,
   document.getElementById('root')
 )
 
