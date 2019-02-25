@@ -1,5 +1,5 @@
 // A extends Component 是一个类
-import { ReactDOM } from './index';
+import { render } from './index';
 function Component(props) {
   this.props = props;
   console.log('function Component run'); 
@@ -7,9 +7,9 @@ function Component(props) {
 
 Component.prototype.setState = function (updateObj) {
   this.state = Object.assign({}, this.state, updateObj);
-  // TODO: ???class??????????render?????????????????render
   const returnVdom = this.render();
-  ReactDOM.render(
+  // 相当于这里就写死了root为container，那如果不是这个节点呢？
+  render(
     returnVdom,
     document.getElementById('root')
   )
