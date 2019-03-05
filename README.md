@@ -88,8 +88,83 @@ ReactDOM.render(
 
 
 ## 四 整理项目结构
+将方法拆分到单独的文件中
+
+#### 难点：
+  1. `Component.prototype.setState`的方法中传入的是新的state，将新的state和和旧的state组合后，调用`component`的`render`方法获得该组件的`vdom`。再调用`ReactDOM.render`方法重新渲染页面。
+
 
 ## 五 生命周期
+
+#### 实现：
+```js
+class A extends Component {
+  componentWillReceiveProps(props) {
+    console.log('componentWillReceiveProps')
+  }
+
+  render() {
+    return (
+      <div>{this.props.count}</div>
+    )
+  }
+}
+
+class B extends Component {
+  constructor(props) {
+    super(props)
+    this.state = {
+      count: 1
+    }
+  }
+
+  componentWillMount() {
+    console.log('componentWillMount')
+  }
+
+  componentDidMount() {
+    console.log('componentDidMount')
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('shouldComponentUpdate', nextProps, nextState)
+    return true
+  }
+
+  componentWillUpdate() {
+    console.log('componentWillUpdate')
+  }
+
+  componentDidUpdate() {
+    console.log('componentDidUpdate')
+  }
+
+  click() {
+    this.setState({
+      count: ++this.state.count
+    })
+  }
+
+  render() {
+    console.log('render')
+    return (
+      <div>
+        <button onClick={this.click.bind(this)}>Click Me!</button>
+        <A count={this.state.count} />
+      </div>
+    )
+  }
+}
+
+ReactDOM.render(
+  <B />,
+  document.getElementById('root')
+)
+```
+
+#### 难点
+首先你要十分清楚react的生命周期,执行生命周期函数，其实就是拿到定义的函数执行。那么如何拿到这些函数？第一个问题就是`component`实例如何拿到
+`createComponent`函数用于获取这个实例。
 
 ## 六 diff算法
 
